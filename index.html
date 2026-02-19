@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玄机黄历 · 通天晓地</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cinnabar: '#C41E3A',
+                        gold: '#D4AF37',
+                        ink: '#1A1A1A',
+                        bronze: '#CD7F32',
+                        jade: '#00A86B',
+                        vermilion: '#E34234',
+                        obsidian: '#0B0B0B',
+                        parchment: '#F5E6D3',
+                        silk: '#FFFDD0',
+                    },
+                    fontFamily: {
+                        ancient: ['Ma Shan Zheng', 'cursive'],
+                        seal: ['ZCOOL XiaoWei', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'ZCOOL XiaoWei', serif;
+            background: radial-gradient(ellipse at center, #1a0a0a 0%, #0a0505 100%);
+        }
+        
+        .ancient-font {
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        
+        /* 八卦旋转动画 */
+        @keyframes rotateBagua {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes reverseRotateBagua {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        
+        .bagua-rotate {
+            animation: rotateBagua 120s linear infinite;
+        }
+        
+        .bagua-reverse {
+            animation: reverseRotateBagua 90s linear infinite;
+        }
+        
+        /* 光晕效果 */
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.3),
+                            0 0 40px rgba(212, 175, 55, 0.2),
+                            0 0 60px rgba(212, 175, 55, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(212, 175, 55, 0.5),
+                            0 0 60px rgba(212, 175, 55, 0.3),
+                            0 0 90px rgba(212, 175, 55, 0.2);
+            }
+        }
+        
+        .glow-effect {
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+        
+        /* 浮动动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* 闪烁星光 */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .star {
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        
+        /* 玻璃态效果 */
+        .glass {
+            background: rgba(26, 10, 10, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        /* 古卷边框 */
+        .scroll-border {
+            border-image: linear-gradient(135deg, #D4AF37 0%, #8B6914 50%, #D4AF37 100%) 1;
+        }
+        
+        /* 印章效果 */
+        .seal-stamp {
+            position: relative;
+        }
+        
+        .seal-stamp::after {
+            content: '吉';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 40px;
+            height: 40px;
+            background: #C41E3A;
+            color: #F5E6D3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border-radius: 4px;
+            transform: rotate(15deg);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* 日期格子悬停效果 */
+        .day-cell {
+            transition: all 0.3s ease;
+        }
+        
+        .day-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a0a0a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #D4AF37, #8B6914);
+            border-radius: 4px;
+        }
+        
+        /* 云纹装饰 */
+        .cloud-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5c-5 0-9 4-9 9 0-3-4-6-8-6-5 0-8 4-8 8 0 5 4 9 8 9h34c5 0 8-4 8-8 0-5-4-9-9-9-4 0-7 3-8 6 0-5-4-9-8-9z' fill='rgba(212,175,55,0.05)'/%3E%3C/svg%3E");
+        }
+        
+        /* 八卦符号 */
+        .trigram {
+            font-size: 24px;
+            color: #D4AF37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-parchment overflow-x-hidden cloud-pattern">
+    <!-- 星空背景 -->
+    <div id="stars" class="fixed inset-0 pointer-events-none z-0"></div>
+    
+    <!-- 主容器 -->
+    <div class="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
+        
+        <!-- 顶部标题区 -->
+        <header class="text-center mb-8">
+            <div class="inline-block relative">
+                <h1 class="ancient-font text-5xl md:text-7xl text-gold mb-2 float-animation" style="text-shadow: 0 0 30px rgba(212,175,55,0.5);">
+                    玄机黄历
+                </h1>
+                <p class="text-bronze text-lg tracking-widest">通天晓地 · 趋吉避凶</p>
+            </div>
+        </header>
+        
+        <!-- 主内容区 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- 左侧八卦区 -->
+            <aside class="lg:col-span-3">
+                <div class="glass rounded-2xl p-6 glow-effect">
+                    <!-- 八卦图 -->
+                    <div class="relative w-full aspect-square max-w-[280px] mx-auto mb-6">
+                        <!-- 外圈 -->
+                        <div class="absolute inset-0 rounded-full border-2 border-gold/30 bagua-rotate">
+                            <svg viewBox="0 0 200 200" class="w-full h-full">
+                                <circle cx="100" cy="100" r="98" fill="none" stroke="url(#goldGradient)" stroke-width="1"/>
+                                <!-- 八卦符号 -->
+                                <text x="100" y="12" text-anchor="middle" class="trigram" fill="#D4AF37">☰</text>
+                                <text x="170" y="45" text-anchor="middle" class="trigram" fill="#D4AF37">☱</text>
+                                <text x="190" y="105" text-anchor="middle" class="trigram" fill="#D4AF37">☲</text>
+                                <text x="170" y="165" text-anchor="middle" class="trigram" fill="#D4AF37">☳</text>
+                                <text x="100" y="195" text-anchor="middle" class="trigram" fill="#D4AF37">☷</text>
+                                <text x="30" y="165" text-anchor="middle" class="trigram" fill="#D4AF37">☶</text>
+                                <text x="10" y="105" text-anchor="middle" class="trigram" fill="#D4AF37">☵</text>
+                                <text x="30" y="45" text-anchor="middle" class="trigram" fill="#D4AF37">☴</text>
+                                <defs>
+                                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#D4AF37"/>
+                                        <stop offset="50%" style="stop-color:#8B6914"/>
+                                        <stop offset="100%" style="stop-color:#D4AF37"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                        
+                        <!-- 中圈 -->
+                        <div class="absolute inset-8 rounded-full border border-gold/20 bagua-reverse flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="text-xs text-bronze mb-1">今日卦象</div>
+                                <div id="todayGua" class="ancient-font text-4xl text-gold">乾</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 太极图 -->
+                        <div class="absolute inset-16 rounded-full overflow-hidden bagua-rotate" style="animation-duration: 60s;">
+                            <svg viewBox="0 0 100 100" class="w-full h-full">
+                                <circle cx="50" cy="50" r="50" fill="#1a0a0a"/>
+                                <path d="M50 0 A50 50 0 0 1 50 100 A25 25 0 0 1 50 50 A25 25 0 0 0 50 0" fill="#D4AF37"/>
+                                <circle cx="50" cy="25" r="8" fill="#1a0a0a"/>
+                                <circle cx="50" cy="75" r="8" fill="#D4AF37"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- 今日卦辞 -->
+                    <div class="bg-obsidian/50 rounded-xl p-4 border border-gold/20">
+                        <h3 class="text-gold text-center mb-2 ancient-font text-xl">今日卦辞</h3>
+                        <p id="guaCi" class="text-parchment/80 text-sm text-center leading-relaxed">
+                            天行健，君子以自强不息
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 五行属性 -->
+                <div class="glass rounded-2xl p-6 mt-6">
+                    <h3 class="text-gold text-center mb-4 ancient-font text-xl">五行能量</h3>
+          
