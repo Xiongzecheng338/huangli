@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玄机黄历 · 通天晓地</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cinnabar: '#C41E3A',
+                        gold: '#D4AF37',
+                        ink: '#1A1A1A',
+                        bronze: '#CD7F32',
+                        jade: '#00A86B',
+                        vermilion: '#E34234',
+                        obsidian: '#0B0B0B',
+                        parchment: '#F5E6D3',
+                        silk: '#FFFDD0',
+                        mystic: '#2D1B4E',
+                    },
+                    fontFamily: {
+                        ancient: ['Ma Shan Zheng', 'cursive'],
+                        seal: ['ZCOOL XiaoWei', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'ZCOOL XiaoWei', serif;
+            background: radial-gradient(ellipse at center, #1a0a0a 0%, #0a0505 100%);
+            overflow-x: hidden;
+        }
+        
+        .ancient-font {
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        
+        /* 入口动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(212, 175, 55, 0.4),
+                            0 0 60px rgba(212, 175, 55, 0.2),
+                            0 0 90px rgba(212, 175, 55, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(212, 175, 55, 0.6),
+                            0 0 100px rgba(212, 175, 55, 0.4),
+                            0 0 150px rgba(212, 175, 55, 0.2);
+            }
+        }
+        
+        @keyframes rotateBagua {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes reverseRotateBagua {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .fade-in { animation: fadeIn 1s ease-out forwards; }
+        .fade-out { animation: fadeOut 0.5s ease-out forwards; }
+        .scale-in { animation: scaleIn 0.5s ease-out forwards; }
+        .slide-up { animation: slideUp 0.6s ease-out forwards; }
+        
+        .bagua-rotate { animation: rotateBagua 60s linear infinite; }
+        .bagua-reverse { animation: reverseRotateBagua 45s linear infinite; }
+        .bagua-slow { animation: rotateBagua 120s linear infinite; }
+        
+        .float-animation { animation: float 6s ease-in-out infinite; }
+        .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+        
+        .star { animation: twinkle 3s ease-in-out infinite; }
+        
+        /* 玻璃态效果 */
+        .glass {
+            background: rgba(26, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        
+        .glass-dark {
+            background: rgba(11, 11, 11, 0.85);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a0a0a; }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(180deg, #D4AF37, #8B6914); 
+            border-radius: 3px; 
+        }
+        
+        /* 按钮悬停效果 */
+        .menu-btn {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .menu-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
+        }
+        
+        /* 模态框 */
+        .modal-overlay {
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* 能量条动画 */
+        .energy-bar {
+            transition: width 1s ease-out;
+        }
+        
+        /* 罗盘指针 */
+        .compass-needle {
+            transition: transform 0.5s ease-out;
+        }
+        
+        /* 文字发光 */
+        .text-glow {
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5),
+                         0 0 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        /* 边框流光 */
+        .border-glow {
+            position: relative;
+        }
+        
+        .border-glow::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            background: linear-gradient(45deg, transparent, #D4AF37, transparent);
+            z-index: -1;
+            animation: rotateBagua 3s linear infinite;
+        }
+        
+        /* 涟漪效果 */
+        .ripple-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple-effect::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            animation: ripple 2s ease-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-parchment">
+
+    <!-- ========== 入口页面 ========== -->
+    <div id="entryScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-obsidian">
+        <!-- 星空背景 -->
+        <div id="entryStars" class="absolute inset-0 pointer-events-none"></div>
+        
+        <!-- 动态八卦 -->
+        <div class="relative w-80 h-80 md:w-96 md:h-96">
+            <!-- 外圈光晕 -->
+            <div class="absolute inset-0 rounded-full pulse-glow"></div>
+            
+            <!-- 外圈八卦符号 -->
+            <div class="absolute inset-0 bagua-slow">
+                <svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#8B6914;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#D4AF37;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="100" cy="100" r="99" fill="none" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.5"/>
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="url(#goldGrad)" stroke-width="0.3" opacity="0.3"/>
+                    
+                    <!-- 八卦符号 -->
+                    <text x="100" y="8" text-anchor="middle" fill="#D4AF37" font-size="14" class="ancient-font">☰</text>
+                    <text x="165" y="38" text-anchor="middle" fill="#D4AF37" font-size="14" class="ancient-font">☱</text>
+                    <text x="192" y="105" text-anchor="middle" fill="#D4AF37" font-size="14" class="ancient-font">☲</text>
+                    <text x="165" y="172" text-anchor="middle" fill="#D4AF37" font-size="14" class="ancient-font">☳</text>
+                    <text x="100" y="198" text-anchor="middle" fill="#D4AF37" font-size="14" class="ancient-font">☷</text>
+                    <text x="35" y="172" text-anchor="middle" fill="#D4AF37" font-size="14" class="ancient-font">☶</text>
+                    <text x="8" y="105" text-anchor="middle" fill="#D4AF37" font-size="14" class="ancient-font">☵</text>
+                    <text x="35" y="38" text-anchor="middle" fill="#D4AF37" font-size="14" class="ancient-font">☴</text>
+                </svg>
+            </div>
+            
+            <!-- 中圈 -->
+            <div class="absolute inset-12 rounded-full border border-gold/30 bagua-reverse flex items-center justify-center">
+                <div class="text-center">
+                    <div class="text-xs text-bronze tracking-widest">今日卦象</div>
+                    <div id="entryGua" class="ancient-font text-5xl text-gold text-glow mt-1">乾</div>
+                </div>
+            </div>
+            
+            <!-- 太极图 -->
+            <div class="absolute inset-20 rounded-full overflow-hidden bagua-rotate" style="animation-duration: 30s;">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                    <circle cx="50" cy="50" r="50" fill="#1a0a0a"/>
+                    <path d="M50 0 A50 50 0 0 1 50 100 A25 25 0 0 1 50 50 A25 25 0 0 0 50 0" fill="#D4AF37"/>
+                    <circle cx="50" cy="25" r="7" fill="#1a0a0a"/>
+                    <circle cx="50" cy="75" r="7" fill="#D4AF37"/>
+                </svg>
+            </div>
+            
+            <!-- 进入按钮 -->
+            <button onclick="enterApp()" class="absolute inset-0 flex items-center justify-center group">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:bg-gold/40 transition-all duration-500"></div>
+                    <div class="relative px-8 py-4 bg-gradient-to-br from-gold/30 to-bronze/30 rounded-full border-2 border-gold/50 backdrop-blur-sm group-hover:border-gold transition-all duration-300">
+                        <span class="ancient-font text-2xl text-gold text-glow">点击进入</span>
+                    </div>
+                </div>
+            </button>
+        </div>
+        
+        <!-- 底部文字 -->
+        <div class="absolute bottom-10 text-center">
+            <h1 class="ancient-font text-4xl md:text-5xl text-gold text-glow mb-2">玄机黄历</h1>
+            <p class="text-bronze/70 tracking-widest text-sm">通天晓地 · 趋吉避凶</p>
+        </div>
+    </div>
+
+    <!-- ========== 主界面 ========== -->
+    <div id="mainApp" class="hidden min-h-screen">
+        <!-- 背景星空 -->
+        <div id="mainStars" class="fixed inset-0 pointer-events-none z-0"></div>
+        
+        <!-- 顶部导航 -->
+        <header class="relative z-20 glass-dark sticky top-0">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center">
+                            <i class="fas fa-yin-yang text-gold"></i>
+                        </div>
+                        <div>
+                            <h1 class="ancient-font text-2xl text-gold text-glow">玄机黄历</h1>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div id="headerDate" class="text-parchment text-sm"></div>
+                        <div id="headerLunar" class="text-bronze text-xs"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="relative z-10 container mx-auto px-4 py-8">
+            
+            <!-- 今日概览卡片 -->
+            <section class="mb-8 slide-up" style="animation-delay: 0.1s;">
+                <div class="glass rounded-3xl p-6 md:p-8 pulse-glow">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- 今日日期 -->
+                        <div class="text-center md:border-r border-gold/20">
+                            <div class="text-bronze text-sm mb-2">公历</div>
+                            <div id="todaySolar" class="ancient-font text-3xl text-gold text-glow mb-4"></div>
+                            <div class="text-bronze text-sm mb-2">农历</div>
+                            <div id="todayLunar" class="text-xl text-parchment"></div>
+                            <div class="mt-4 flex justify-center space-x-4">
+                                <div class="px-3 py-1 rounded-full bg-gold/10 border border-gold/30">
+                                    <span id="todayZodiac" class="text-gold"></span>
+                                </div>
+                                <div class="px-3 py-1 rounded-full bg-gold/10 border border-gold/30">
+                                    <span id="todayConstellation" class="text-gold"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 今日卦象 -->
+                        <div class="text-center md:border-r border-gold/20">
+                            <div class="text-bronze text-sm mb-2">今日卦象</div>
+                            <div id="todayGuaMain" class="ancient-font text-6xl text-gold text-glow my-4 float-animation"></div>
+                            <div id="todayGuaName" class="text-parchment mb-2"></div>
+                            <div id="todayGuaCi" class="text-parchment/70 text-sm italic px-4"></div>
+                        </div>
+                        
+                        <!-- 宜忌速览 -->
+                        <div class="text-center">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 rounded-2xl bg-jade/10 border border-jade/30">
+                                    <div class="text-jade text-lg mb-2">宜</div>
+                                    <div id="quickYi" class="text-jade/80 text-sm"></div>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-cinnabar/10 border border-cinnabar/30">
+                                    <div class="text-cinnabar text-lg mb-2">忌</div>
+                                    <div id="quickJi" class="text-cinnabar/80 text-sm"></div>
+                                </div>
+                            </div>
+                            <button onclick="openModule('fortune')" class="mt-4 px-6 py-2 rounded-full bg-gold/20 border border-gold/50 text-gold hover:bg-gold/30 transition-all text-sm">
+                                查看详细运势 <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 功能按钮区 -->
+            <section class="mb-8 slide-up" style="animation-delay: 0.2s;">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <!-- 运势详解 -->
+                    <button onclick="openModule('fortune')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-cinnabar/30 to-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-star text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">运势详解</div>
+                        <div class="text-parchment/50 text-xs mt-1">今日宜忌吉凶</div>
+                    </button>
+                    
+                    <!-- 万年历 -->
+                    <button onclick="openModule('calendar')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-gold/30 to-bronze/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-calendar-alt text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">万年历</div>
+                        <div class="text-parchment/50 text-xs mt-1">农历公历对照</div>
+                    </button>
+                    
+                    <!-- 八字算命 -->
+                    <button onclick="openModule('bazi')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-mystic/50 to-cinnabar/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-yin-yang text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">八字算命</div>
+                        <div class="text-parchment/50 text-xs mt-1">生辰八字推算</div>
+                    </button>
+                    
+                    <!-- 风水罗盘 -->
+                    <button onclick="openModule('fengshui')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-jade/30 to-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-compass text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">风水罗盘</div>
+                        <div class="text-parchment/50 text-xs mt-1">方位吉凶指南</div>
+                    </button>
+                    
+                    <!-- 姓名测算 -->
+                    <button onclick="openModule('name')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-vermilion/30 to-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-signature text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">姓名测算</div>
+                        <div class="text-parchment/50 text-xs mt-1">姓名吉凶分析</div>
+                    </button>
+                    
+                    <!-- 解梦占卜 -->
+                    <button onclick="openModule('dream')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-ink/50 to-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-moon text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">解梦占卜</div>
+                        <div class="text-parchment/50 text-xs mt-1">周公解梦查询</div>
+                    </button>
+                    
+                    <!-- 吉日查询 -->
+                    <button onclick="openModule('luckyday')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-gold/40 to-jade/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-calendar-check text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">吉日查询</div>
+                        <div class="text-parchment/50 text-xs mt-1">择吉日选良辰</div>
+                    </button>
+                    
+                    <!-- 节日节气 -->
+                    <button onclick="openModule('festival')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-cinnabar/40 to-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-horse text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">节日节气</div>
+                        <div class="text-parchment/50 text-xs mt-1">传统节日节气</div>
+                    </button>
+                    
+                    <!-- 每日祈福 -->
+                    <button onclick="openModule('blessing')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-jade/40 to-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-hands-praying text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">每日祈福</div>
+                        <div class="text-parchment/50 text-xs mt-1">烧香祈福许愿</div>
+                    </button>
+                    
+                    <!-- 生肖运势 -->
+                    <button onclick="openModule('zodiac')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-vermilion/40 to-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-dragon text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">生肖运势</div>
+                        <div class="text-parchment/50 text-xs mt-1">十二生肖运程</div>
+                    </button>
+                    
+                    <!-- 五行能量 -->
+                    <button onclick="openModule('wuxing')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-gold/30 to-mystic/50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-fire text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">五行能量</div>
+                        <div class="text-parchment/50 text-xs mt-1">今日五行分布</div>
+                    </button>
+                    
+                    <!-- 历史上的今天 -->
+                    <button onclick="openModule('history')" class="menu-btn glass rounded-2xl p-6 text-center group">
+                        <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-bronze/40 to-gold/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i class="fas fa-scroll text-2xl text-gold"></i>
+                        </div>
+                        <div class="text-gold ancient-font text-lg">历史今日</div>
+                        <div class="text-parchment/50 text-xs mt-1">古今大事记</div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 底部格言 -->
+            <section class="slide-up" style="animation-delay: 0.3s;">
+                <div class="glass rounded-2xl p-6 text-center">
+                    <i class="fas fa-quote-left text-gold/30 text-2xl mb-4"></i>
+                    <p id="dailyQuote" class="text-parchment/80 text-lg italic mb-2"></p>
+                    <p id="quoteSource" class="text-bronze text-sm"></p>
+                </div>
+            </section>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="relative z-10 text-center py-6 border-t border-gold/10 mt-8">
+            <p class="text-gold/40 text-sm">玄机黄历 · 传承千年智慧</p>
+            <p class="text-parchment/20 text-xs mt-1">仅供参考，切勿迷信</p>
+        </footer>
+    </div>
+
+    <!-- ========== 模态框容器 ========== -->
+    <div id="modalOverlay" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+        <div id="modalContent" class="glass-dark rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden scale-in">
+            <!-- 模态头部 -->
+            <div class="flex items-center justify-between p-6 border-b border-gold/20">
+                <h2 id="modalTitle" class="ancient-font text-2xl text-gold text-glow"></h2>
+                <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-gold/10 hover:bg-gold/20 flex items-center justify-center transition-all">
+                    <i class="fas fa-times text-gold"></i>
+                </button>
+            </div>
+            <!-- 模态内容 -->
+            <div id="modalBody" class="p-6 overflow-y-auto" style="max-height: calc(90vh - 80px);">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 数据定义 ====================
+        const tianGan = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+        const diZhi = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+        const shengXiao = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+        const lunarMonths = ['正', '二', '三', '四', '五', '六', '七', '八', '九', '十', '冬', '腊'];
+        const lunarDays = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
+                          '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
+                          '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
+        
+        const bagua = ['乾', '坤', '震', '巽', '坎', '离', '艮', '兑'];
+        const baguaName = {
+            '乾': '乾为天', '坤': '坤为地', '震': '震为雷', '巽': '巽为风',
+            '坎': '坎为水', '离': '离为火', '艮': '艮为山', '兑': '兑为泽'
+        };
+        const guaCi = {
+            '乾': '天行健，君子以自强不息。利贞，元亨。',
+            '坤': '地势坤，君子以厚德载物。利牝马之贞。',
+            '震': '震惊百里，不丧匕鬯。亨，震来虩虩。',
+            '巽': '随风巽，君子以申命行事。小亨，利有攸往。',
+            '坎': '水流而不盈，行险而不失其信。习坎，有孚。',
+            '离': '明两作离，大人以继明照于四方。利贞，亨。',
+            '艮': '时止则止，时行则行。艮其背，不获其身。',
+            '兑': '丽泽兑，君子以朋友讲习。亨，利贞。'
+        };
+        
+        const yiItems = ['祭祀', '祈福', '求嗣', '开光', '出行', '解除', '纳采', '冠笄', '嫁娶', '纳婿',
+                        '安床', '移徙', '入宅', '安香', '拆卸', '动土', '挂匾', '开市', '立券', '纳财',
+                        '沐浴', '理发', '安门', '修造', '盖屋', '合脊', '起基', '定磉', '安碓硙', '放水',
+                        '掘井', '破土', '安葬', '启钻', '除服', '成服', '开生坟', '合寿木', '入殓', '移柩'];
+        
+        const jiItems = ['嫁娶', '安葬', '出行', '动土', '开市', '入宅', '移徙', '祭祀', '祈福', '开光',
+                        '纳采', '安床', '掘井', '破土', '安门', '作灶', '盖屋', '竖柱', '上梁', '栽种'];
+        
+        const quotes = [
+            { text: '积善之家，必有余庆；积不善之家，必有余殃。', source: '《易经·坤卦》' },
+            { text: '天行健，君子以自强不息。', source: '《易经·乾卦》' },
+            { text: '地势坤，君子以厚德载物。', source: '《易经·坤卦》' },
+            { text: '穷则变，变则通，通则久。', source: '《易经·系辞》' },
+            { text: '仁者见之谓之仁，知者见之谓之知。', source: '《易经·系辞》' },
+            { text: '君子藏器于身，待时而动。', source: '《易经·系辞》' },
+            { text: '善不积不足以成名，恶不积不足以灭身。', source: '《易经·系辞》' },
+            { text: '谦谦君子，用涉大川。', source: '《易经·谦卦》' },
+            { text: '居上位而不骄，在下位而不忧。', source: '《易经·乾卦》' },
+            { text: '同声相应，同气相求。', source: '《易经·乾卦》' }
+        ];
+        
+        const constellations = [
+            { name: '摩羯座', start: [1, 1], end: [1, 19] },
+            { name: '水瓶座', start: [1, 20], end: [2, 18] },
+            { name: '双鱼座', start: [2, 19], end: [3, 20] },
+            { name: '白羊座', start: [3, 21], end: [4, 19] },
+            { name: '金牛座', start: [4, 20], end: [5, 20] },
+            { name: '双子座', start: [5, 21], end: [6, 21] },
+            { name: '巨蟹座', start: [6, 22], end: [7, 22] },
+            { name: '狮子座', start: [7, 23], end: [8, 22] },
+            { name: '处女座', start: [8, 23], end: [9, 22] },
+            { name: '天秤座', start: [9, 23], end: [10, 23] },
+            { name: '天蝎座', start: [10, 24], end: [11, 22] },
+            { name: '射手座', start: [11, 23], end: [12, 21] },
+            { name: '摩羯座', start: [12, 22], end: [12, 31] }
+        ];
+        
+        const solarTerms = ['小寒', '大寒', '立春', '雨水', '惊蛰', '春分', '清明', '谷雨', 
+                           '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑',
+                           '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至'];
+        
+        const dreamDict = [
+            { keyword: '水', meaning: '梦见水主财运，清水吉，浊水凶。', detail: '水在梦中象征财富和情感，清水预示好运将至，浊水则需小心人际纠纷。' },
+            { keyword: '龙', meaning: '梦见龙主大吉，事业腾飞之兆。', detail: '龙为祥瑞之兽，梦见龙飞腾预示事业有成，贵人相助。' },
+            { keyword: '蛇', meaning: '梦见蛇主变化，或有口舌之争。', detail: '蛇象征变化与智慧，也可能暗示小人，需谨慎行事。' },
+            { keyword: '火', meaning: '梦见火主兴旺，但需防口舌。', detail: '火代表热情与能量，红火预示兴旺，但也要注意情绪控制。' },
+            { keyword: '树', meaning: '梦见树木生长，事业根基稳固。', detail: '树木象征生命力与成长，茂盛的树木预示家业兴旺。' },
+            { keyword: '钱', meaning: '梦见钱财，近期财运有变。', detail: '梦见得财可能破财，梦见失财反而可能进财，需辩证看待。' },
+            { keyword: '婚', meaning: '梦见婚嫁，姻缘将至或人际和谐。', detail: '未婚者可能遇良缘，已婚者家庭和睦，人际关系改善。' },
+            { keyword: '死', meaning: '梦见死亡非凶兆，反主新生。', detail: '死亡象征旧事物的结束，新生活的开始，不必过于担心。' }
+        ];
+        
+        const zodiacFortune = {
+            '鼠': { overall: '运势平稳，贵人相助', career: '工作顺利，有升职机会', wealth: '财运尚可，稳健为主', love: '感情稳定，已婚者和睦', health: '注意休息，避免熬夜' },
+            '牛': { overall: '稳中有进，厚积薄发', career: '脚踏实地，终有回报', wealth: '正财为主，偏财勿贪', love: '真诚待人，良缘自来', health: '肠胃需注意，饮食规律' },
+            '虎': { overall: '冲劲十足，把握机会', career: '事业上升期，大胆进取', wealth: '财运旺盛，投资谨慎', love: '桃花旺盛，单身者把握', health: '注意肝胆，少饮酒' },
+            '兔': { overall: '温和顺利，人缘极佳', career: '贵人运强，合作顺利', wealth: '收入稳定，有意外之财', love: '感情甜蜜，珍惜眼前', health: '情绪稳定，身心愉悦' },
+            '龙': { overall: '本命年需谨慎，稳中求进', career: '事业有阻，需耐心应对', wealth: '财运起伏，保守为上', love: '感情需经营，避免争执', health: '注意安全，定期体检' },
+            '蛇': { overall: '运势上升，把握机遇', career: '智慧取胜，升职加薪', wealth: '偏财运佳，适度投资', love: '魅力提升，桃花朵朵', health: '注意皮肤，多喝水' },
+            '马': { overall: '奔波劳碌，收获颇丰', career: '事业忙碌，成果显著', wealth: '多劳多得，财源广进', love: '异地有情，距离生美', health: '注意心脏，适量运动' },
+            '羊': { overall: '温和吉祥，诸事顺遂', career: '稳步发展，贵人提携', wealth: '财运平稳，积少成多', love: '感情细腻，家庭和睦', health: '注意保暖，预防感冒' },
+            '猴': { overall: '灵活应变，机遇多多', career: '创意无限，表现突出', wealth: '财路宽广，多元发展', love: '桃花运旺，选择需慎', health: '注意呼吸系统，多通风' },
+            '鸡': { overall: '金鸡报晓，好运将至', career: '努力有回报，名声提升', wealth: '正财为主，细水长流', love: '感情专一，婚姻美满', health: '注意咽喉，少吃辛辣' },
+            '狗': { overall: '忠诚守信，贵人相助', career: '事业稳定，合作愉快', wealth: '财运平稳，不宜冒险', love: '感情忠诚，家庭幸福', health: '注意关节，适量运动' },
+            '猪': { overall: '福气满满，诸事吉祥', career: '工作顺利，人缘好', wealth: '财运亨通，有贵人财', love: '感情甜蜜，单身有缘', health: '注意体重，控制饮食' }
+        };
+        
+        // 农历数据
+        const lunarInfo = [
+            0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0, 0x055d2,
+            0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540, 0x0d6a0, 0x0ada2, 0x095b0, 0x14977,
+            0x04970, 0x0a4b0, 0x0b4b5, 0x06a50, 0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970,
+            0x06566, 0x0d4a0, 0x0ea50, 0x06e95, 0x05ad0, 0x02b60, 0x186e3, 0x092e0, 0x1c8d7, 0x0c950,
+            0x0d4a0, 0x1d8a6, 0x0b550, 0x056a0, 0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2, 0x0a950, 0x0b557,
+            0x06ca0, 0x0b550, 0x15355, 0x04da0, 0x0a5b0, 0x14573, 0x052b0, 0x0a9a8, 0x0e950, 0x06aa0,
+            0x0aea6, 0x0ab50, 0x04b60, 0x0aae4, 0x0a570, 0x05260, 0x0f263, 0x0d950, 0x05b57, 0x056a0,
+            0x096d0, 0x04dd5, 0x04ad0, 0x0a4d0, 0x0d4d4, 0x0d250, 0x0d558, 0x0b540, 0x0b6a0, 0x195a6,
+            0x095b0, 0x049b0, 0x0a974, 0x0a4b0, 0x0b27a, 0x06a50, 0x06d40, 0x0af46, 0x0ab60, 0x09570,
+            0x04af5, 0x04970, 0x064b0, 0x074a3, 0x0ea50, 0x06b58, 0x055c0, 0x0ab60, 0x096d5, 0x092e0,
+            0x0c960, 0x0d954, 0x0d4a0, 0x0da50, 0x07552, 0x056a0, 0x0abb7, 0x025d0, 0x092d0, 0x0cab5,
+            0x0a950, 0x0b4a0, 0x0baa4, 0x0ad50, 0x055d9, 0x04ba0, 0x0a5b0, 0x15176, 0x052b0, 0x0a930,
+            0x07954, 0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6, 0x0a4e0, 0x0d260, 0x0ea65, 0x0d530,
+            0x05aa0, 0x076a3, 0x096d0, 0x04afb, 0x04ad0, 0x0a4d0, 0x1d0b6, 0x0d250, 0x0d520, 0x0dd45,
+            0x0b5a0, 0x056d0, 0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0,
+            0x14b63, 0x09370, 0x049f8, 0x04970, 0x064b0, 0x168a6, 0x0ea50, 0x06b20, 0x1a6c4, 0x0aae0,
+            0x0a2e0, 0x0d2e3, 0x0c960, 0x0d557, 0x0d4a0, 0x0da50, 0x05d55, 0x056a0, 0x0a6d0, 0x055d4,
+            0x052d0, 0x0a9b8, 0x0a950, 0x0b4a0, 0x0b6a6, 0x0ad50, 0x055a0, 0x0aba4, 0x0a5b0, 0x052b0,
+            0x0b273, 0x06930, 0x07337, 0x06aa0, 0x0ad50, 0x14b55, 0x04b60, 0x0a570, 0x054e4, 0x0d160,
+            0x0e968, 0x0d520, 0x0daa0, 0x16aa6, 0x056d0, 0x04ae0, 0x0a9d4, 0x0a2d0, 0x0d150, 0x0f252,
+            0x0d520
+        ];
+        
+        // ==================== 工具函数 ====================
+        function getLunarMonthDays(year, month) {
+            return (lunarInfo[year - 1900] & (0x10000 >> month)) ? 30 : 29;
+        }
+        
+        function getLunarYearDays(year) {
+            let sum = 348;
+            for (let i = 0x8000; i > 0x8; i >>= 1) {
+                sum += (lunarInfo[year - 1900] & i) ? 1 : 0;
+            }
+            return sum + getLeapMonthDays(year);
+        }
+        
+        function getLeapMonth(year) {
+            return lunarInfo[year - 1900] & 0xf;
+        }
+        
+        function getLeapMonthDays(year) {
+            if (getLeapMonth(year)) {
+                return (lunarInfo[year - 1900] & 0x10000) ? 30 : 29;
+            }
+            return 0;
+        }
+        
+        function solarToLunar(year, month, day) {
+            const baseDate = new Date(1900, 0, 31);
+            const targetDate = new Date(year, month - 1, day);
+            let offset = Math.floor((targetDate - baseDate) / 86400000);
+            
+            let lunarYear = 1900;
+            let lunarMonth = 1;
+            let lunarDay = 1;
+            let isLeap = false;
+            
+            let yearDays = 0;
+            while (lunarYear < 2100 && offset > 0) {
+                yearDays = getLunarYearDays(lunarYear);
+                if (offset < yearDays) break;
+                offset -= yearDays;
+                lunarYear++;
+            }
+            
+            let leapMonth = getLeapMonth(lunarYear);
+            let monthDays = 0;
+            
+            for (let i = 1; i <= 12; i++) {
+                if (leapMonth > 0 && i === leapMonth + 1 && !isLeap) {
+                    monthDays = getLeapMonthDays(lunarYear);
+                    isLeap = true;
+                    i--;
+                } else {
+                    monthDays = getLunarMonthDays(lunarYear, i);
+                    isLeap = false;
+                }
+                
+                if (offset < monthDays) {
+                    lunarMonth = i;
+                    break;
+                }
+                offset -= monthDays;
+            }
+            
+            lunarDay = offset + 1;
+            
+            return { year: lunarYear, month: lunarMonth, day: lunarDay, isLeap: isLeap };
+        }
+        
+        function getGanZhiYear(year) {
+            return tianGan[(year - 4) % 10] + diZhi[(year - 4) % 12];
+        }
+        
+        function getZodiac(year) {
+            return shengXiao[(year - 4) % 12];
+        }
+        
+        function getConstellation(month, day) {
+            for (const c of constellations) {
+                if ((month === c.start[0] && day >= c.start[1]) || (month === c.end[0] && day <= c.end[1])) {
+                    return c.name;
+                }
+            }
+            return constellations[0].name;
+        }
+        
+        function generateYiJi(seed) {
+            const random = (s) => {
+                const x = Math.sin(s) * 10000;
+                return x - Math.floor(x);
+            };
+            
+            const yiCount = Math.floor(random(seed) * 5) + 4;
+            const jiCount = Math.floor(random(seed + 1) * 4) + 2;
+            
+            const shuffledYi = [...yiItems].sort(() => random(seed + 2) - 0.5);
+            const shuffledJi = [...jiItems].sort(() => random(seed + 3) - 0.5);
+            
+            return {
+                yi: shuffledYi.slice(0, yiCount),
+                ji: shuffledJi.slice(0, jiCount)
+            };
+        }
+        
+        function getTodayGua(date) {
+            const seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+            const index = Math.floor((Math.sin(seed) * 10000) % 8);
+            return bagua[Math.abs(index)];
+        }
+        
+        // ==================== 星空背景 ====================
+        function createStars(containerId, count = 80) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star absolute rounded-full bg-parchment';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(star);
+            }
+        }
+        
+        // ==================== 入口与导航 ====================
+        function enterApp() {
+            const entry = document.getElementById('entryScreen');
+            const main = document.getElementById('mainApp');
+            
+            entry.classList.add('fade-out');
+            setTimeout(() => {
+                entry.classList.add('hidden');
+                main.classList.remove('hidden');
+                main.classList.add('fade-in');
+                createStars('mainStars', 100);
+                updateMainInfo();
+            }, 500);
+        }
+        
+        function updateMainInfo() {
+            const today = new Date();
+            const lunar = solarToLunar(today.getFullYear(), today.getMonth() + 1, today.getDate());
+            const yiji = generateYiJi(today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate());
+            const gua = getTodayGua(today);
+            
+            // 更新头部
+            document.getElementById('headerDate').textContent = 
+                `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+            document.getElementById('headerLunar').textContent = 
+                `农历${getGanZhiYear(lunar.year)}年 ${lunarMonths[lunar.month - 1]}月${lunarDays[lunar.day - 1]}`;
+            
+            // 更新今日卡片
+            document.getElementById('todaySolar').textContent = 
+                `${today.getMonth() + 1}月${today.getDate()}日`;
+            document.getElementById('todayLunar').textContent = 
+                `${getGanZhiYear(lunar.year)}年 ${lunarMonths[lunar.month - 1]}月${lunarDays[lunar.day - 1]}`;
+            document.getElementById('todayZodiac').textContent = getZodiac(lunar.year) + '年';
+            document.getElementById('todayConstellation').textContent = getConstellation(today.getMonth() + 1, today.getDate());
+            
+            // 卦象
+            document.getElementById('todayGuaMain').textContent = gua;
+            document.getElementById('todayGuaName').textContent = baguaName[gua];
+            document.getElementById('todayGuaCi').textContent = guaCi[gua];
+            
+            // 宜忌
+            document.getElementById('quickYi').textContent = yiji.yi.slice(0, 3).join(' · ');
+            document.getElementById('quickJi').textContent = yiji.ji.slice(0, 3).join(' · ');
+            
+            // 格言
+            const quoteIndex = (today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()) % quotes.length;
+            document.getElementById('dailyQuote').textContent = `"${quotes[quoteIndex].text}"`;
+            document.getElementById('quoteSource').textContent = `——${quotes[quoteIndex].source}`;
+        }
+        
+        // ==================== 模态框系统 ====================
+        function openModule(moduleName) {
+            const overlay = document.getElementById('modalOverlay');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            overlay.classList.remove('hidden');
+            body.scrollTop = 0;
+            
+            switch(moduleName) {
+                case 'fortune': loadFortuneModule(title, body); break;
+                case 'calendar': loadCalendarModule(title, body); break;
+                case 'bazi': loadBaziModule(title, body); break;
+                case 'fengshui': loadFengshuiModule(title, body); break;
+                case 'name': loadNameModule(title, body); break;
+                case 'dream': loadDreamModule(title, body); break;
+                case 'luckyday': loadLuckyDayModule(title, body); break;
+                case 'festival': loadFestivalModule(title, body); break;
+                case 'blessing': loadBlessingModule(title, body); break;
+                case 'zodiac': loadZodiacModule(title, body); break;
+                case 'wuxing': loadWuxingModule(title, body); break;
+                case 'history': loadHistoryModule(title, body); break;
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+        }
+        
+        // 点击遮罩关闭
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        
+        // ==================== 模块内容 ====================
+        
+        // 运势详解模块
+        function loadFortuneModule(title, body) {
+            const today = new Date();
+            const lunar = solarToLunar(today.getFullYear(), today.getMonth() + 1, today.getDate());
+            const yiji = generateYiJi(today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate());
+            const gua = getTodayGua(today);
+            
+            title.textContent = '今日运势详解';
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <!-- 日期信息 -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="p-4 rounded-xl bg-obsidian/50 border border-gold/20 text-center">
+                            <div class="text-bronze text-sm mb-1">公历</div>
+                            <div class="text-gold text-lg">${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日</div>
+                        </div>
+                        <div class="p-4 rounded-xl bg-obsidian/50 border border-gold/20 text-center">
+                            <div class="text-bronze text-sm mb-1">农历</div>
+                            <div class="text-gold text-lg">${getGanZhiYear(lunar.year)}年${lunarMonths[lunar.month - 1]}月${lunarDays[lunar.day - 1]}</div>
+                        </div>
+                        <div class="p-4 rounded-xl bg-obsidian/50 border border-gold/20 text-center">
+                            <div class="text-bronze text-sm mb-1">生肖</div>
+                            <div class="text-gold text-lg">${getZodiac(lunar.year)}</div>
+                        </div>
+                        <div class="p-4 rounded-xl bg-obsidian/50 border border-gold/20 text-center">
+                            <div class="text-bronze text-sm mb-1">星座</div>
+                            <div class="text-gold text-lg">${getConstellation(today.getMonth() + 1, today.getDate())}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 卦象详解 -->
+                    <div class="p-6 rounded-xl bg-gradient-to-br from-gold/10 to-bronze/10 border border-gold/30">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="text-center">
+                                <div class="text-bronze text-sm">今日卦象</div>
+                                <div class="ancient-font text-6xl text-gold text-glow my-2">${gua}</div>
+                                <div class="text-parchment text-lg">${baguaName[gua]}</div>
+                            </div>
+                        </div>
+                        <div class="text-center text-parchment/80 italic leading-relaxed">
+                            "${guaCi[gua]}"
+                        </div>
+                    </div>
+                    
+                    <!-- 宜忌详解 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 rounded-xl bg-jade/10 border border-jade/30">
+                            <div class="flex items-center mb-4">
+                                <span class="w-10 h-10 rounded-full bg-jade/20 flex items-center justify-center text-jade text-xl mr-3">宜</span>
+                                <span class="text-jade text-xl ancient-font">今日宜事</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                ${yiji.yi.map(y => `<span class="px-4 py-2 rounded-lg bg-jade/20 text-jade/90">${y}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="p-6 rounded-xl bg-cinnabar/10 border border-cinnabar/30">
+                            <div class="flex items-center mb-4">
+                                <span class="w-10 h-10 rounded-full bg-cinnabar/20 flex items-center justify-center text-cinnabar text-xl mr-3">忌</span>
+                                <span class="text-cinnabar text-xl ancient-font">今日忌事</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                ${yiji.ji.map(j => `<span class="px-4 py-2 rounded-lg bg-cinnabar/20 text-cinnabar/90">${j}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 吉时 -->
+                    <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h3 class="text-gold text-xl mb-4 ancient-font text-center">今日吉时</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="p-3 rounded-lg bg-gold/5 border border-gold/20 text-center">
+                                <div class="text-gold">子时</div>
+                                <div class="text-parchment/50 text-xs">23:00-01:00</div>
+                                <div class="text-jade text-sm mt-1">大吉</div>
+                            </div>
+                            <div class="p-3 rounded-lg bg-gold/5 border border-gold/20 text-center">
+                                <div class="text-gold">卯时</div>
+                                <div class="text-parchment/50 text-xs">05:00-07:00</div>
+                                <div class="text-jade text-sm mt-1">大吉</div>
+                            </div>
+                            <div class="p-3 rounded-lg bg-gold/5 border border-gold/20 text-center">
+                                <div class="text-gold">午时</div>
+                                <div class="text-parchment/50 text-xs">11:00-13:00</div>
+                                <div class="text-bronze text-sm mt-1">中吉</div>
+                            </div>
+                            <div class="p-3 rounded-lg bg-gold/5 border border-gold/20 text-center">
+                                <div class="text-gold">酉时</div>
+                                <div class="text-parchment/50 text-xs">17:00-19:00</div>
+                                <div class="text-bronze text-sm mt-1">中吉</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 值神方位 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h3 class="text-gold text-lg mb-4 ancient-font">今日值神</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-gold/5">
+                                    <span class="text-parchment/70">值日星神</span>
+                                    <span class="text-gold">青龙</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-gold/5">
+                                    <span class="text-parchment/70">五行</span>
+                                    <span class="text-gold">海中金</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-gold/5">
+                                    <span class="text-parchment/70">冲煞</span>
+                                    <span class="text-cinnabar">冲龙煞北</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h3 class="text-gold text-lg mb-4 ancient-font">吉神方位</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-jade/10">
+                                    <span class="text-jade">喜神方位</span>
+                                    <span class="text-gold">东南</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-jade/10">
+                                    <span class="text-jade">财神方位</span>
+                                    <span class="text-gold">正南</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-cinnabar/10">
+                                    <span class="text-cinnabar">煞神方位</span>
+                                    <span class="text-parchment/70">正北</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 万年历模块
+        function loadCalendarModule(title, body) {
+            title.textContent = '万年历';
+            
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay();
+            const totalDays = lastDay.getDate();
+            
+            let calendarHTML = `
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <button onclick="changeCalendarMonth(-1)" class="p-3 rounded-full bg-gold/10 hover:bg-gold/20 border border-gold/30">
+                            <i class="fas fa-chevron-left text-gold"></i>
+                        </button>
+                        <div class="text-center">
+                            <div id="calYear" class="ancient-font text-2xl text-gold">${getGanZhiYear(year)}年</div>
+                            <div id="calMonth" class="text-bronze">${year}年${month + 1}月</div>
+                        </div>
+                        <button onclick="changeCalendarMonth(1)" class="p-3 rounded-full bg-gold/10 hover:bg-gold/20 border border-gold/30">
+                            <i class="fas fa-chevron-right text-gold"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-7 gap-2 text-center">
+                        <div class="text-cinnabar ancient-font">日</div>
+                        <div class="text-gold/70">一</div>
+                        <div class="text-gold/70">二</div>
+                        <div class="text-gold/70">三</div>
+                        <div class="text-gold/70">四</div>
+                        <div class="text-gold/70">五</div>
+                        <div class="text-cinnabar ancient-font">六</div>
+                    </div>
+                    
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-2">
+            `;
+            
+            // 空白格
+            for (let i = 0; i < startDay; i++) {
+                calendarHTML += `<div class="aspect-square"></div>`;
+            }
+            
+            // 日期格
+            for (let day = 1; day <= totalDays; day++) {
+                const currentDate = new Date(year, month, day);
+                const lunar = solarToLunar(year, month + 1, day);
+                const isToday = currentDate.toDateString() === today.toDateString();
+                const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
+                
+                calendarHTML += `
+                    <div class="aspect-square rounded-xl p-2 cursor-pointer flex flex-col items-center justify-center
+                        ${isToday ? 'bg-cinnabar/30 border-2 border-cinnabar' : 'bg-obsidian/30 border border-gold/20 hover:border-gold/50'}
+                        ${isWeekend ? '' : ''}" onclick="showDayDetail(${year}, ${month}, ${day})">
+                        <span class="text-sm ${isToday ? 'text-gold ancient-font' : 'text-parchment'}">${day}</span>
+                        <span class="text-xs text-gold/50">${lunarDays[lunar.day - 1]}</span>
+                    </div>
+                `;
+            }
+            
+            calendarHTML += `
+                    </div>
+                    
+                    <div class="p-4 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 class="text-gold text-center mb-3 ancient-font">节气时刻</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                            ${solarTerms.slice(0, 8).map(t => `
+                                <div class="p-2 rounded-lg bg-gold/5 text-center">
+                                    <span class="text-gold">${t}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            body.innerHTML = calendarHTML;
+        }
+        
+        // 八字算命模块
+        function loadBaziModule(title, body) {
+            title.textContent = '八字算命';
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="p-6 rounded-xl bg-gradient-to-br from-mystic/30 to-obsidian/50 border border-gold/30">
+                        <h3 class="text-gold text-xl mb-4 ancient-font text-center">请输入您的出生信息</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-parchment/70 text-sm block mb-2">出生日期（公历）</label>
+                                <input type="date" id="baziDate" class="w-full bg-obsidian/50 border border-gold/30 rounded-xl px-4 py-3 text-parchment focus:border-gold focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-parchment/70 text-sm block mb-2">出生时辰</label>
+                                <select id="baziHour" class="w-full bg-obsidian/50 border border-gold/30 rounded-xl px-4 py-3 text-parchment focus:border-gold focus:outline-none">
+                                    <option value="0">子时 (23:00-01:00)</option>
+                                    <option value="1">丑时 (01:00-03:00)</option>
+                                    <option value="2">寅时 (03:00-05:00)</option>
+                                    <option value="3">卯时 (05:00-07:00)</option>
+                                    <option value="4">辰时 (07:00-09:00)</option>
+                                    <option value="5">巳时 (09:00-11:00)</option>
+                                    <option value="6">午时 (11:00-13:00)</option>
+                                    <option value="7">未时 (13:00-15:00)</option>
+                                    <option value="8">申时 (15:00-17:00)</option>
+                                    <option value="9">酉时 (17:00-19:00)</option>
+                                    <option value="10">戌时 (19:00-21:00)</option>
+                                    <option value="11">亥时 (21:00-23:00)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="calculateBazi()" class="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-gold/30 to-bronze/30 border border-gold/50 text-gold text-lg hover:from-gold/40 hover:to-bronze/40 transition-all">
+                            <i class="fas fa-yin-yang mr-2"></i>开始推算
+                        </button>
+                    </div>
+                    
+                    <div id="baziResult" class="hidden space-y-6">
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h4 class="text-gold text-lg mb-4 ancient-font text-center">您的八字</h4>
+                            <div class="grid grid-cols-4 gap-4 text-center">
+                                <div class="p-4 rounded-xl bg-gold/10 border border-gold/30">
+                                    <div class="text-bronze text-sm mb-2">年柱</div>
+                                    <div id="baziYear" class="ancient-font text-3xl text-gold text-glow"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-gold/10 border border-gold/30">
+                                    <div class="text-bronze text-sm mb-2">月柱</div>
+                                    <div id="baziMonth" class="ancient-font text-3xl text-gold text-glow"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-gold/10 border border-gold/30">
+                                    <div class="text-bronze text-sm mb-2">日柱</div>
+                                    <div id="baziDay" class="ancient-font text-3xl text-gold text-glow"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-gold/10 border border-gold/30">
+                                    <div class="text-bronze text-sm mb-2">时柱</div>
+                                    <div id="baziHourResult" class="ancient-font text-3xl text-gold text-glow"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                                <h4 class="text-gold text-lg mb-4 ancient-font">五行分析</h4>
+                                <div id="wuxingAnalysis" class="space-y-3"></div>
+                            </div>
+                            <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                                <h4 class="text-gold text-lg mb-4 ancient-font">命理简批</h4>
+                                <div id="baziAnalysis" class="text-parchment/80 leading-relaxed"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function calculateBazi() {
+            const dateVal = document.getElementById('baziDate').value;
+            const hourVal = parseInt(document.getElementById('baziHour').value);
+            
+            if (!dateVal) {
+                alert('请选择出生日期');
+                return;
+            }
+            
+            const date = new Date(dateVal);
+            const lunar = solarToLunar(date.getFullYear(), date.getMonth() + 1, date.getDate());
+            
+            // 简化八字计算
+            const yearGan = tianGan[(lunar.year - 4) % 10];
+            const yearZhi = diZhi[(lunar.year - 4) % 12];
+            
+            const monthGan = tianGan[(lunar.year * 12 + lunar.month + 2) % 10];
+            const monthZhi = diZhi[(lunar.month + 1) % 12];
+            
+            const dayGan = tianGan[(date.getDate() + 5) % 10];
+            const dayZhi = diZhi[(date.getDate() + 5) % 12];
+            
+            const hourGan = tianGan[(date.getDate() * 2 + hourVal) % 10];
+            const hourZhi = diZhi[hourVal];
+            
+            document.getElementById('baziYear').textContent = yearGan + yearZhi;
+            document.getElementById('baziMonth').textContent = monthGan + monthZhi;
+            document.getElementById('baziDay').textContent = dayGan + dayZhi;
+            document.getElementById('baziHourResult').textContent = hourGan + hourZhi;
+            
+            // 五行分析
+            const wuxingMap = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
+            const wuxingCount = { '金': 0, '木': 0, '水': 0, '火': 0, '土': 0 };
+            
+            [yearGan, monthGan, dayGan, hourGan].forEach(g => wuxingCount[wuxingMap[g]]++);
+            
+            const wuxingColors = { '金': 'text-gray-300', '木': 'text-green-400', '水': 'text-blue-400', '火': 'text-red-400', '土': 'text-yellow-400' };
+            const wuxingBg = { '金': 'bg-gray-700/30', '木': 'bg-green-900/30', '水': 'bg-blue-900/30', '火': 'bg-red-900/30', '土': 'bg-yellow-900/30' };
+            
+            document.getElementById('wuxingAnalysis').innerHTML = Object.entries(wuxingCount).map(([name, count]) => `
+                <div class="flex items-center justify-between p-3 rounded-lg ${wuxingBg[name]}">
+                    <span class="${wuxingColors[name]}">${name}</span>
+                    <div class="flex items-center">
+                        <div class="w-24 h-2 bg-obsidian/50 rounded-full mr-3">
+                            <div class="h-full ${wuxingColors[name].replace('text', 'bg')} rounded-full" style="width: ${count * 25}%"></div>
+                        </div>
+                        <span class="${wuxingColors[name]}">${count}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            // 命理简批
+            const analysis = `此命${wuxingCount['金'] > 1 ? '金旺' : ''}${wuxingCount['木'] > 1 ? '木旺' : ''}${wuxingCount['水'] > 1 ? '水旺' : ''}${wuxingCount['火'] > 1 ? '火旺' : ''}${wuxingCount['土'] > 1 ? '土旺' : ''}，性格刚毅，做事果断。为人诚实守信，重情重义。早年运势平稳，中年后事业有成，晚年福寿双全。宜从事与${wuxingCount['金'] > 0 ? '金融、' : ''}${wuxingCount['木'] > 0 ? '教育、' : ''}${wuxingCount['水'] > 0 ? '商贸、' : ''}${wuxingCount['火'] > 0 ? '科技、' : ''}${wuxingCount['土'] > 0 ? '房产、' : ''}相关行业。`;
+            
+            document.getElementById('baziAnalysis').textContent = analysis;
+            document.getElementById('baziResult').classList.remove('hidden');
+        }
+        
+        // 风水罗盘模块
+        function loadFengshuiModule(title, body) {
+            title.textContent = '风水罗盘';
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="flex justify-center">
+                        <div class="relative w-80 h-80">
+                            <!-- 外圈 -->
+                            <div class="absolute inset-0 rounded-full border-4 border-gold/30 bagua-rotate">
+                                <svg viewBox="0 0 200 200" class="w-full h-full">
+                                    <circle cx="100" cy="100" r="98" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.5"/>
+                                    <text x="100" y="12" text-anchor="middle" fill="#D4AF37" font-size="16" class="ancient-font">离</text>
+                                    <text x="188" y="105" text-anchor="middle" fill="#D4AF37" font-size="16" class="ancient-font">坤</text>
+                                    <text x="100" y="198" text-anchor="middle" fill="#D4AF37" font-size="16" class="ancient-font">坎</text>
+                                    <text x="12" y="105" text-anchor="middle" fill="#D4AF37" font-size="16" class="ancient-font">乾</text>
+                                    <text x="150" y="35" text-anchor="middle" fill="#D4AF37" font-size="12">兑</text>
+                                    <text x="170" y="150" text-anchor="middle" fill="#D4AF37" font-size="12">艮</text>
+                                    <text x="50" y="175" text-anchor="middle" fill="#D4AF37" font-size="12">震</text>
+                                    <text x="30" y="50" text-anchor="middle" fill="#D4AF37" font-size="12">巽</text>
+                                </svg>
+                            </div>
+                            
+                            <!-- 中圈 -->
+                            <div class="absolute inset-8 rounded-full border-2 border-gold/20 bagua-reverse flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-bronze text-xs">今日吉方</div>
+                                    <div class="ancient-font text-3xl text-gold text-glow">东南</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 太极 -->
+                            <div class="absolute inset-20 rounded-full overflow-hidden">
+                                <svg viewBox="0 0 100 100" class="w-full h-full">
+                                    <circle cx="50" cy="50" r="50" fill="#1a0a0a"/>
+                                    <path d="M50 0 A50 50 0 0 1 50 100 A25 25 0 0 1 50 50 A25 25 0 0 0 50 0" fill="#D4AF37"/>
+                                    <circle cx="50" cy="25" r="6" fill="#1a0a0a"/>
+                                    <circle cx="50" cy="75" r="6" fill="#D4AF37"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h4 class="text-gold text-lg mb-4 ancient-font">今日方位宜忌</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-jade/10">
+                                    <span class="text-jade">喜神方位</span>
+                                    <span class="text-gold text-lg">东南</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-jade/10">
+                                    <span class="text-jade">财神方位</span>
+                                    <span class="text-gold text-lg">正南</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-jade/10">
+                                    <span class="text-jade">福神方位</span>
+                                    <span class="text-gold text-lg">正东</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-cinnabar/10">
+                                    <span class="text-cinnabar">煞神方位</span>
+                                    <span class="text-parchment/70">正北</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h4 class="text-gold text-lg mb-4 ancient-font">风水建议</h4>
+                            <div class="text-parchment/80 space-y-3 leading-relaxed">
+                                <p>• 今日东南方为吉方，适合在此方位办公、洽谈。</p>
+                                <p>• 正南方财气旺盛，可在此方位摆放招财物品。</p>
+                                <p>• 正北方今日有煞气，不宜在此方位久坐。</p>
+                                <p>• 正东方福星高照，适合祈福、许愿。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 姓名测算模块
+        function loadNameModule(title, body) {
+            title.textContent = '姓名测算';
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="p-6 rounded-xl bg-gradient-to-br from-vermilion/20 to-obsidian/50 border border-gold/30">
+                        <h3 class="text-gold text-xl mb-4 ancient-font text-center">请输入您的姓名</h3>
+                        <input type="text" id="nameInput" placeholder="请输入姓名（2-4个汉字）" maxlength="4"
+                            class="w-full bg-obsidian/50 border border-gold/30 rounded-xl px-4 py-4 text-parchment text-center text-xl focus:border-gold focus:outline-none">
+                        <button onclick="calculateName()" class="w-full mt-4 py-4 rounded-xl bg-gradient-to-r from-gold/30 to-bronze/30 border border-gold/50 text-gold text-lg hover:from-gold/40 hover:to-bronze/40 transition-all">
+                            <i class="fas fa-signature mr-2"></i>开始测算
+                        </button>
+                    </div>
+                    
+                    <div id="nameResult" class="hidden space-y-6">
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20 text-center">
+                            <h4 class="text-gold text-lg mb-4 ancient-font">姓名评分</h4>
+                            <div id="nameScore" class="ancient-font text-6xl text-gold text-glow"></div>
+                            <div id="nameLevel" class="text-bronze mt-2"></div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                                <h4 class="text-gold text-lg mb-4 ancient-font">三才五格</h4>
+                                <div id="nameGrid" class="space-y-3"></div>
+                            </div>
+                            <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                                <h4 class="text-gold text-lg mb-4 ancient-font">姓名解析</h4>
+                                <div id="nameAnalysis" class="text-parchment/80 leading-relaxed"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function calculateName() {
+            const name = document.getElementById('nameInput').value.trim();
+            if (name.length < 2) {
+                alert('请输入至少2个汉字的姓名');
+                return;
+            }
+            
+            const score = Math.floor(Math.random() * 20) + 80;
+            const level = score >= 90 ? '上上签' : score >= 80 ? '上签' : score >= 70 ? '中签' : '下签';
+            
+            document.getElementById('nameScore').textContent = score + '分';
+            document.getElementById('nameLevel').textContent = level;
+            
+            const grids = [
+                { name: '天格', value: Math.floor(Math.random() * 10) + 15 },
+                { name: '人格', value: Math.floor(Math.random() * 10) + 20 },
+                { name: '地格', value: Math.floor(Math.random() * 10) + 18 },
+                { name: '外格', value: Math.floor(Math.random() * 10) + 12 },
+                { name: '总格', value: Math.floor(Math.random() * 10) + 25 }
+            ];
+            
+            document.getElementById('nameGrid').innerHTML = grids.map(g => `
+                <div class="flex justify-between items-center p-3 rounded-lg bg-gold/5">
+                    <span class="text-parchment/70">${g.name}</span>
+                    <span class="text-gold">${g.value}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('nameAnalysis').innerHTML = `
+                <p class="mb-3">「${name}」这个名字寓意深远，音韵和谐。</p>
+                <p class="mb-3">从五行来看，名字中${['金', '木', '水', '火', '土'][Math.floor(Math.random() * 5)]}气较旺，主${['事业有成', '财运亨通', '学业进步', '姻缘美满', '健康长寿'][Math.floor(Math.random() * 5)]}。</p>
+                <p>建议在日常生活中多接触与五行相生的颜色和方位，以增强运势。</p>
+            `;
+            
+            document.getElementById('nameResult').classList.remove('hidden');
+        }
+        
+        // 解梦占卜模块
+        function loadDreamModule(title, body) {
+            title.textContent = '解梦占卜';
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="p-6 rounded-xl bg-gradient-to-br from-ink/50 to-obsidian/50 border border-gold/30">
+                        <h3 class="text-gold text-xl mb-4 ancient-font text-center">请输入您梦见的事物</h3>
+                        <input type="text" id="dreamInput" placeholder="例如：水、龙、蛇、火..."
+                            class="w-full bg-obsidian/50 border border-gold/30 rounded-xl px-4 py-4 text-parchment text-center text-xl focus:border-gold focus:outline-none">
+                        <button onclick="interpretDream()" class="w-full mt-4 py-4 rounded-xl bg-gradient-to-r from-gold/30 to-bronze/30 border border-gold/50 text-gold text-lg hover:from-gold/40 hover:to-bronze/40 transition-all">
+                            <i class="fas fa-moon mr-2"></i>解梦
+                        </button>
+                    </div>
+                    
+                    <div id="dreamResult" class="hidden p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 class="text-gold text-lg mb-4 ancient-font text-center">解梦结果</h4>
+                        <div id="dreamMeaning" class="text-parchment/80 text-center text-xl mb-4"></div>
+                        <div id="dreamDetail" class="text-parchment/60 leading-relaxed"></div>
+                    </div>
+                    
+                    <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 class="text-gold text-lg mb-4 ancient-font text-center">常见梦境</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            ${dreamDict.map(d => `
+                                <button onclick="document.getElementById('dreamInput').value='${d.keyword}';interpretDream();" 
+                                    class="p-3 rounded-xl bg-gold/5 border border-gold/20 hover:border-gold/50 text-gold transition-all">
+                                    ${d.keyword}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function interpretDream() {
+            const keyword = document.getElementById('dreamInput').value.trim();
+            if (!keyword) {
+                alert('请输入梦境关键词');
+                return;
+            }
+            
+            const found = dreamDict.find(d => keyword.includes(d.keyword)) || {
+                keyword: keyword,
+                meaning: '此梦寓意深远，需结合个人实际情况解读。',
+                detail: '梦境往往反映内心深处的想法和担忧。建议保持平和心态，顺其自然。'
+            };
+            
+            document.getElementById('dreamMeaning').textContent = found.meaning;
+            document.getElementById('dreamDetail').textContent = found.detail;
+            document.getElementById('dreamResult').classList.remove('hidden');
+        }
+        
+        // 吉日查询模块
+        function loadLuckyDayModule(title, body) {
+            title.textContent = '吉日查询';
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h4 class="text-gold text-lg mb-4 ancient-font">选择事项</h4>
+                            <select id="eventType" class="w-full bg-obsidian/50 border border-gold/30 rounded-xl px-4 py-3 text-parchment focus:border-gold focus:outline-none">
+                                <option value="marriage">嫁娶</option>
+                                <option value="move">搬家</option>
+                                <option value="open">开业</option>
+                                <option value="travel">出行</option>
+                                <option value="burial">安葬</option>
+                                <option value="groundbreaking">动土</option>
+                                <option value="contract">签约</option>
+                                <option value="sacrifice">祭祀</option>
+                            </select>
+                        </div>
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h4 class="text-gold text-lg mb-4 ancient-font">选择月份</h4>
+                            <input type="month" id="targetMonth" class="w-full bg-obsidian/50 border border-gold/30 rounded-xl px-4 py-3 text-parchment focus:border-gold focus:outline-none">
+                        </div>
+                    </div>
+                    
+                    <button onclick="findLuckyDays()" class="w-full py-4 rounded-xl bg-gradient-to-r from-gold/30 to-bronze/30 border border-gold/50 text-gold text-lg hover:from-gold/40 hover:to-bronze/40 transition-all">
+                        <i class="fas fa-calendar-check mr-2"></i>查找吉日
+                    </button>
+                    
+                    <div id="luckyDaysResult" class="hidden p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 class="text-gold text-lg mb-4 ancient-font text-center">本月吉日</h4>
+                        <div id="luckyDaysList" class="flex flex-wrap gap-3 justify-center"></div>
+                    </div>
+                </div>
+            `;
+            
+            // 设置默认月份
+            const today = new Date();
+            document.getElementById('targetMonth').value = 
+                `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        }
+        
+        function findLuckyDays() {
+            const targetMonth = document.getElementById('targetMonth').value;
+            if (!targetMonth) {
+                alert('请选择月份');
+                return;
+            }
+            
+            const [year, month] = targetMonth.split('-').map(Number);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const luckyDays = [];
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const seed = year * 10000 + month * 100 + day;
+                const random = Math.sin(seed) * 10000;
+                if (random - Math.floor(random) > 0.65) {
+                    luckyDays.push(day);
+                }
+            }
+            
+            document.getElementById('luckyDaysList').innerHTML = luckyDays
+                .map(d => `<span class="px-4 py-2 rounded-xl bg-jade/20 border border-jade/30 text-jade">${month}月${d}日</span>`)
+                .join('');
+            document.getElementById('luckyDaysResult').classList.remove('hidden');
+        }
+        
+        // 节日节气模块
+        function loadFestivalModule(title, body) {
+            title.textContent = '节日节气';
+            
+            const festivals = [
+                { name: '春节', date: '农历正月初一', desc: '中华民族最隆重的传统佳节' },
+                { name: '元宵节', date: '农历正月十五', desc: '赏花灯、吃元宵' },
+                { name: '清明节', date: '公历4月4-6日', desc: '扫墓祭祖、踏青' },
+                { name: '端午节', date: '农历五月初五', desc: '赛龙舟、吃粽子' },
+                { name: '七夕节', date: '农历七月初七', desc: '中国情人节' },
+                { name: '中秋节', date: '农历八月十五', desc: '赏月、吃月饼' },
+                { name: '重阳节', date: '农历九月初九', desc: '登高、赏菊' },
+                { name: '腊八节', date: '农历腊月初八', desc: '喝腊八粥' }
+            ];
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 class="text-gold text-lg mb-4 ancient-font text-center">二十四节气</h4>
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                            ${solarTerms.map(t => `
+                                <div class="p-3 rounded-xl bg-gold/5 border border-gold/20 text-center">
+                                    <span class="text-gold">${t}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 class="text-gold text-lg mb-4 ancient-font text-center">传统节日</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${festivals.map(f => `
+                                <div class="p-4 rounded-xl bg-gold/5 border border-gold/20">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-gold text-lg ancient-font">${f.name}</span>
+                                        <span class="text-bronze text-sm">${f.date}</span>
+                                    </div>
+                                    <p class="text-parchment/60 text-sm">${f.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 每日祈福模块
+        function loadBlessingModule(title, body) {
+            title.textContent = '每日祈福';
+            
+            body.innerHTML = `
+                <div class="space-y-6 text-center">
+                    <div class="p-8 rounded-xl bg-gradient-to-br from-jade/20 to-gold/10 border border-gold/30">
+                        <div id="lotusContainer" class="relative w-48 h-48 mx-auto mb-6">
+                            <svg viewBox="0 0 100 100" class="w-full h-full float-animation">
+                                <ellipse cx="50" cy="70" rx="30" ry="10" fill="rgba(0,168,107,0.2)"/>
+                                <path d="M50 30 Q30 50 50 70 Q70 50 50 30" fill="rgba(212,175,55,0.6)"/>
+                                <path d="M50 35 Q35 50 50 65 Q65 50 50 35" fill="rgba(212,175,55,0.8)"/>
+                                <path d="M50 40 Q40 50 50 60 Q60 50 50 40" fill="#D4AF37"/>
+                                <circle cx="50" cy="50" r="5" fill="#C41E3A"/>
+                            </svg>
+                        </div>
+                        
+                        <h3 class="text-gold text-2xl mb-4 ancient-font">诚心祈福</h3>
+                        <p class="text-parchment/70 mb-6">点击下方按钮，点燃心灯，祈求平安</p>
+                        
+                        <button onclick="lightLamp()" class="px-8 py-4 rounded-xl bg-gradient-to-r from-cinnabar/40 to-gold/40 border border-gold/50 text-gold text-xl hover:from-cinnabar/50 hover:to-gold/50 transition-all">
+                            <i class="fas fa-fire mr-2"></i>点燃心灯
+                        </button>
+                    </div>
+                    
+                    <div id="blessingResult" class="hidden p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <div class="text-jade text-xl mb-4 ancient-font">祈福成功</div>
+                        <p class="text-parchment/80">愿您心想事成，万事如意，阖家幸福，平安吉祥！</p>
+                        <div class="mt-4 text-gold/50 text-sm">已为您点亮第 <span id="lampCount"></span> 盏心灯</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <button onclick="blessingType('health')" class="p-4 rounded-xl bg-jade/10 border border-jade/30 text-jade hover:bg-jade/20 transition-all">
+                            <i class="fas fa-heart text-2xl mb-2"></i>
+                            <div>祈健康</div>
+                        </button>
+                        <button onclick="blessingType('wealth')" class="p-4 rounded-xl bg-gold/10 border border-gold/30 text-gold hover:bg-gold/20 transition-all">
+                            <i class="fas fa-coins text-2xl mb-2"></i>
+                            <div>祈财运</div>
+                        </button>
+                        <button onclick="blessingType('love')" class="p-4 rounded-xl bg-cinnabar/10 border border-cinnabar/30 text-cinnabar hover:bg-cinnabar/20 transition-all">
+                            <i class="fas fa-heart-circle-check text-2xl mb-2"></i>
+                            <div>祈姻缘</div>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function lightLamp() {
+            const count = Math.floor(Math.random() * 10000) + 100000;
+            document.getElementById('lampCount').textContent = count.toLocaleString();
+            document.getElementById('blessingResult').classList.remove('hidden');
+        }
+        
+        function blessingType(type) {
+            const messages = {
+                health: '愿您身体健康，无病无灾，福寿绵长！',
+                wealth: '愿您财源广进，生意兴隆，日进斗金！',
+                love: '愿您姻缘美满，家庭和睦，幸福甜蜜！'
+            };
+            alert(messages[type]);
+        }
+        
+        // 生肖运势模块
+        function loadZodiacModule(title, body) {
+            title.textContent = '生肖运势';
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+                        ${shengXiao.map((z, i) => `
+                            <button onclick="showZodiacDetail('${z}')" 
+                                class="p-4 rounded-xl bg-gold/5 border border-gold/20 hover:border-gold/50 text-center transition-all hover:bg-gold/10">
+                                <div class="text-3xl mb-2">${['🐭', '🐮', '🐯', '🐰', '🐲', '🐍', '🐴', '🐏', '🐵', '🐔', '🐶', '🐷'][i]}</div>
+                                <div class="text-gold">${z}</div>
+                            </button>
+                        `).join('')}
+                    </div>
+                    
+                    <div id="zodiacDetail" class="hidden p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 id="zodiacTitle" class="text-gold text-2xl mb-6 ancient-font text-center"></h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-gold/5">
+                                    <div class="text-bronze mb-2">整体运势</div>
+                                    <div id="zodiacOverall" class="text-parchment"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-gold/5">
+                                    <div class="text-bronze mb-2">事业运势</div>
+                                    <div id="zodiacCareer" class="text-parchment"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-gold/5">
+                                    <div class="text-bronze mb-2">财运运势</div>
+                                    <div id="zodiacWealth" class="text-parchment"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-gold/5">
+                                    <div class="text-bronze mb-2">感情运势</div>
+                                    <div id="zodiacLove" class="text-parchment"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-gold/5">
+                                    <div class="text-bronze mb-2">健康运势</div>
+                                    <div id="zodiacHealth" class="text-parchment"></div>
+                                </div>
+                                <div class="p-4 rounded-xl bg-jade/10 border border-jade/30">
+                                    <div class="text-jade mb-2">幸运数字</div>
+                                    <div id="zodiacLucky" class="text-gold text-xl"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showZodiacDetail(zodiac) {
+            const fortune = zodiacFortune[zodiac];
+            document.getElementById('zodiacTitle').textContent = zodiac + '年运势';
+            document.getElementById('zodiacOverall').textContent = fortune.overall;
+            document.getElementById('zodiacCareer').textContent = fortune.career;
+            document.getElementById('zodiacWealth').textContent = fortune.wealth;
+            document.getElementById('zodiacLove').textContent = fortune.love;
+            document.getElementById('zodiacHealth').textContent = fortune.health;
+            document.getElementById('zodiacLucky').textContent = [Math.floor(Math.random() * 9) + 1, Math.floor(Math.random() * 9) + 1].join(', ');
+            document.getElementById('zodiacDetail').classList.remove('hidden');
+        }
+        
+        // 五行能量模块
+        function loadWuxingModule(title, body) {
+            title.textContent = '五行能量';
+            
+            const today = new Date();
+            const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+            
+            const elements = [
+                { name: '金', color: 'gray', bg: 'gray-700/30', border: 'gray-400/30', text: 'gray-300', fill: 'gray-400' },
+                { name: '木', color: 'green', bg: 'green-900/30', border: 'green-500/30', text: 'green-400', fill: 'green-500' },
+                { name: '水', color: 'blue', bg: 'blue-900/30', border: 'blue-500/30', text: 'blue-400', fill: 'blue-500' },
+                { name: '火', color: 'red', bg: 'red-900/30', border: 'red-500/30', text: 'red-400', fill: 'red-500' },
+                { name: '土', color: 'yellow', bg: 'yellow-900/30', border: 'yellow-500/30', text: 'yellow-400', fill: 'yellow-500' }
+            ];
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 class="text-gold text-lg mb-6 ancient-font text-center">今日五行能量分布</h4>
+                        <div class="space-y-4">
+                            ${elements.map((el, i) => {
+                                const val = Math.floor((Math.sin(seed + i) * 10000) % 50) + 50;
+                                return `
+                                    <div class="p-4 rounded-xl bg-${el.bg} border border-${el.border}">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-${el.text} text-xl ancient-font">${el.name}</span>
+                                            <span class="text-${el.text}">${val}%</span>
+                                        </div>
+                                        <div class="w-full h-3 bg-obsidian/50 rounded-full overflow-hidden">
+                                            <div class="h-full bg-${el.fill} rounded-full energy-bar" style="width: ${val}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h4 class="text-gold text-lg mb-4 ancient-font">五行相生</h4>
+                            <div class="text-parchment/80 leading-relaxed">
+                                <p class="mb-2">木生火 → 火生土 → 土生金 → 金生水 → 水生木</p>
+                                <p class="text-sm text-parchment/60">相生代表促进、助长、资生</p>
+                            </div>
+                        </div>
+                        <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                            <h4 class="text-gold text-lg mb-4 ancient-font">五行相克</h4>
+                            <div class="text-parchment/80 leading-relaxed">
+                                <p class="mb-2">木克土 → 土克水 → 水克火 → 火克金 → 金克木</p>
+                                <p class="text-sm text-parchment/60">相克代表制约、抑制、克服</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 历史今日模块
+        function loadHistoryModule(title, body) {
+            title.textContent = '历史今日';
+            
+            const events = [
+                { year: '公元前', event: '秦始皇统一六国，建立秦朝' },
+                { year: '公元105年', event: '蔡伦改进造纸术' },
+                { year: '公元1405年', event: '郑和首次下西洋' },
+                { year: '公元1662年', event: '郑成功收复台湾' },
+                { year: '公元1839年', event: '林则徐虎门销烟' },
+                { year: '公元1912年', event: '中华民国成立' },
+                { year: '公元1949年', event: '中华人民共和国成立' },
+                { year: '公元2003年', event: '神舟五号载人飞船成功发射' }
+            ];
+            
+            body.innerHTML = `
+                <div class="space-y-6">
+                    <div class="p-6 rounded-xl bg-obsidian/50 border border-gold/20">
+                        <h4 class="text-gold text-lg mb-4 ancient-font text-center">古今大事记</h4>
+                        <div class="space-y-4">
+                            ${events.map(e => `
+                                <div class="flex items-start p-4 rounded-xl bg-gold/5 border border-gold/10 hover:border-gold/30 transition-all">
+                                    <div class="w-24 text-bronze text-sm flex-shrink-0">${e.year}</div>
+                                    <div class="text-parchment/80">${e.event}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars('entryStars', 120);
+            
+            // 设置入口卦象
+            const today = new Date();
+            document.getElementById('entryGua').textContent = getTodayGua(today);
+        });
+    </script>
+</body>
+</html>
