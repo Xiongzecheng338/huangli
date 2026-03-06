@@ -1,0 +1,28 @@
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志文件
+*.log
+
+# 缓存文件
+.cache/
+__pycache__/
+
+# 临时文件
+*.tmp
+*.temp
+
+# 测试文件
+test-results/
+coverage/
+
+# 配置文件 (可选)
+# .env

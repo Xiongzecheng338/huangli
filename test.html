@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天机黄历 - 功能测试页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #D4AF37;
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-section h2 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+            font-size: 24px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 5px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+        
+        .test-item.success {
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .test-item.failed {
+            border-left: 3px solid #F44336;
+        }
+        
+        .test-item.pending {
+            border-left: 3px solid #FFC107;
+        }
+        
+        .status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .status.failed {
+            background: #F44336;
+            color: white;
+        }
+        
+        .status.pending {
+            background: #FFC107;
+            color: black;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(196, 30, 58, 0.2));
+            border: 2px solid #D4AF37;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #D4AF37;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #D4AF37, #FFD700);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 天机黄历 - 功能测试报告</h1>
+        
+        <!-- 摘要 -->
+        <div class="summary">
+            <h2 style="color: #D4AF37; margin-bottom: 20px;">测试总览</h2>
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTests">0</div>
+                    <div class="stat-label">总测试数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="passedTests" style="color: #4CAF50;">0</div>
+                    <div class="stat-label">通过</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="failedTests" style="color: #F44336;">0</div>
+                    <div class="stat-label">失败</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="successRate">0%</div>
+                    <div class="stat-label">成功率</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%;">0%</div>
+            </div>
+            <button class="btn" onclick="runAllTests()">▶️ 运行所有测试</button>
+        </div>
+        
+        <!-- 测试结果 -->
+        <div id="testResults"></div>
+    </div>
+    
+    <script>
+        // 测试框架
+        const TestRunner = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            results: [],
+            
+            test(name, fn) {
+                this.total++;
+                try {
+                    const result = fn();
+                    if (result) {
+                        this.passed++;
+                        this.results.push({ name, status: 'success', message: '通过' });
+                    } else {
+                        this.failed++;
+                        this.results.push({ name, status: 'failed', message: '失败' });
+                    }
+                } catch (error) {
+                    this.failed++;
+                    this.results.push({ name, status: 'failed', message: error.message });
+                }
+            },
+            
+            async asyncTest(name, fn) {
+                this.total++;
+                try {
+                    const result = await fn();
+                    if (result) {
+                        this.passed++;
+                        this.results.push({ name, status: 'success', message: '通过' });
+                    } else {
+                        this.failed++;
+                        this.results.push({ name, status: 'failed', message: '失败' });
+                    }
+                } catch (error) {
+                    this.failed++;
+                    this.results.push({ name, status: 'failed', message: error.message });
+                }
+            },
+            
+            render() {
+                const container = document.getElementById('testResults');
+                const groups = {};
+                
+                this.results.forEach(result => {
+                    const group = result.name.split(' - ')[0];
+                    if (!groups[group]) {
+                        groups[group] = [];
+                    }
+                    groups[group].push(result);
+                });
+                
+                container.innerHTML = Object.entries(groups).map(([group, tests]) => `
+                    <div class="test-section">
+                        <h2>${group}</h2>
+                        ${tests.map(test => `
+                            <div class="test-item ${test.status}">
+                                <span>${test.name.split(' - ')[1] || test.name}</span>
+                                <span class="status ${test.status}">${test.message}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('');
+                
+                this.updateSummary();
+            },
+            
+            updateSummary() {
+                document.getElementById('totalTests').textContent = this.total;
+                document.getElementById('passedTests').textContent = this.passed;
+                document.getElementById('failedTests').textContent = this.failed;
+                const rate = this.total > 0 ? Math.round((this.passed / this.total) * 100) : 0;
+                document.getElementById('successRate').textContent = rate + '%';
+                
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = rate + '%';
+                progressBar.textContent = rate + '%';
+            }
+        };
+        
+        // 测试用例
+        function runAllTests() {
+            TestRunner.total = 0;
+            TestRunner.passed = 0;
+            TestRunner.failed = 0;
+            TestRunner.results = [];
+            
+            // 1. 模块加载测试
+            TestRunner.test('模块加载 - ConfigManager', () => {
+                return typeof ConfigManager !== 'undefined';
+            });
+            
+            TestRunner.test('模块加载 - ErrorHandler', () => {
+                return typeof ErrorHandler !== 'undefined';
+            });
+            
+            TestRunner.test('模块加载 - SettingsModule', () => {
+                return typeof SettingsModule !== 'undefined';
+            });
+            
+            TestRunner.test('模块加载 - AlmanacModule', () => {
+                return typeof AlmanacModule !== 'undefined';
+            });
+            
+            TestRunner.test('模块加载 - DateSelectionModule', () => {
+                return typeof DateSelectionModule !== 'undefined';
+            });
+            
+            TestRunner.test('模块加载 - AchievementSystem', () => {
+                return typeof AchievementSystem !== 'undefined';
+            });
+            
+            // 2. 配置管理测试
+            TestRunner.test('配置管理 - 获取配置', () => {
+                return ConfigManager.get('theme') !== undefined;
+            });
+            
+            TestRunner.test('配置管理 - 设置配置', () => {
+                const old = ConfigManager.get('soundEnabled');
+                ConfigManager.set('soundEnabled', !old, false);
+                const result = ConfigManager.get('soundEnabled') === !old;
+                ConfigManager.set('soundEnabled', old, false);
+                return result;
+            });
+            
+            TestRunner.test('配置管理 - 默认配置', () => {
+                return ConfigManager.defaults.theme === 'dark';
+            });
+            
+            // 3. 错误处理测试
+            TestRunner.test('错误处理 - 日志记录', () => {
+                try {
+                    ErrorHandler.info('测试日志');
+                    return true;
+                } catch {
+                    return false;
+                }
+            });
+            
+            TestRunner.test('错误处理 - 安全执行', () => {
+                const result = ErrorHandler.safeExecute(() => {
+                    throw new Error('测试错误');
+                });
+                return result === null;
+            });
+            
+            // 4. 工具函数测试
+            TestRunner.test('工具函数 - 农历转换', () => {
+                return typeof solarToLunar === 'function';
+            });
+            
+            TestRunner.test('工具函数 - 干支计算', () => {
+                return typeof getGanZhiYear === 'function';
+            });
+            
+            TestRunner.test('工具函数 - 卦象生成', () => {
+                return typeof getTodayGua === 'function';
+            });
+            
+            TestRunner.test('工具函数 - 宜忌生成', () => {
+                return typeof generateYiJi === 'function';
+            });
+            
+            // 5. 数据完整性测试
+            TestRunner.test('数据完整性 - 天干数据', () => {
+                return tianGan && tianGan.length === 10;
+            });
+            
+            TestRunner.test('数据完整性 - 地支数据', () => {
+                return diZhi && diZhi.length === 12;
+            });
+            
+            TestRunner.test('数据完整性 - 八卦数据', () => {
+                return baguaName && Object.keys(baguaName).length === 8;
+            });
+            
+            TestRunner.test('数据完整性 - 生肖数据', () => {
+                return shengxiao && shengxiao.length === 12;
+            });
+            
+            // 6. UI 功能测试
+            TestRunner.test('UI 功能 - 模态框函数', () => {
+                return typeof openModule === 'function' && typeof closeModal === 'function';
+            });
+            
+            TestRunner.test('UI 功能 - 进入应用', () => {
+                return typeof enterApp === 'function';
+            });
+            
+            // 7. 成就系统测试
+            TestRunner.test('成就系统 - 初始化', () => {
+                return typeof AchievementSystem.init === 'function';
+            });
+            
+            TestRunner.test('成就系统 - 等级配置', () => {
+                return AchievementSystem.levels && AchievementSystem.levels.length === 10;
+            });
+            
+            TestRunner.test('成就系统 - 成就配置', () => {
+                return AchievementSystem.achievements && AchievementSystem.achievements.length >= 10;
+            });
+            
+            // 8. 性能测试
+            TestRunner.test('性能 - LocalStorage 访问', () => {
+                const start = performance.now();
+                for (let i = 0; i < 100; i++) {
+                    localStorage.setItem('test_' + i, 'value');
+                    localStorage.getItem('test_' + i);
+                }
+                const duration = performance.now() - start;
+                return duration < 100; // 100ms 内完成
+            });
+            
+            // 清理测试数据
+            for (let i = 0; i < 100; i++) {
+                localStorage.removeItem('test_' + i);
+            }
+            
+            // 渲染结果
+            setTimeout(() => {
+                TestRunner.render();
+                
+                // 显示最终报告
+                if (TestRunner.passed === TestRunner.total) {
+                    setTimeout(() => {
+                        alert(`✅ 所有测试通过！共 ${TestRunner.total} 项测试，成功率 100%`);
+                    }, 500);
+                } else {
+                    setTimeout(() => {
+                        alert(`⚠️ 测试完成！通过 ${TestRunner.passed}/${TestRunner.total}，成功率 ${Math.round((TestRunner.passed / TestRunner.total) * 100)}%`);
+                    }, 500);
+                }
+            }, 100);
+        }
+        
+        // 页面加载后自动运行测试
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>
